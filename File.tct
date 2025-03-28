@@ -1,0 +1,55 @@
+quikko/
+│── backend/                      # Flask Backend
+│   ├── app/                      
+│   │   ├── routes/               # API routes (e.g., products, cart, user)
+│   │   │   └── api.py            # Flask API routes
+│   │   ├── models.py             # Database models
+│   │   ├── static/               # Static files if needed (images, etc.)
+│   │   ├── templates/            # If needed for HTML fallback (optional)
+│   │   └── __init__.py           # Initialize Flask app
+│   ├── instance/
+│   │   └── config.py             # Database credentials, Flask config
+│   ├── migrations/               # For database migrations
+│   ├── tests/                    # Backend unit tests
+│   ├── requirements.txt          # Python dependencies (Flask, SQLAlchemy, etc.)
+│   └── run.py                    # Main entry point for Flask server
+│
+│── frontend/                     # React Frontend
+│   ├── public/                   # Public static files (favicon, index.html)
+│   ├── src/
+│   │   ├── components/           # React components (Navbar, ProductCard, etc.)
+│   │   ├── pages/                # Pages (HomePage, CartPage, etc.)
+│   │   ├── App.js                # Main React App component
+│   │   ├── index.js              # Entry point for React
+│   │   └── styles/               # CSS or Tailwind config
+│   ├── package.json              # React dependencies
+│   └── README.md                 # Frontend documentation
+│
+│── .gitignore                    # Ignore unnecessary files in Git
+│── README.md                     # Project documentation
+
+pip install flask flask-cors flask-sqlalchemy flask-migrate
+pip freeze > requirements.txt
+cd ../quikko-frontend
+npm install axios
+
+
+quikko-frontend/
+└── src/
+    ├── components/              # Reusable UI components
+    │   └── Navbar.js            
+    ├── pages/                   # Main pages
+    │   ├── HomePage.js          # Landing page
+    │   ├── ShopkeeperPage.js    # Shopkeeper dashboard
+    │   ├── AdminPage.js         # Admin dashboard
+    │   ├── CustomerPage.js      # Customer dashboard
+    │   ├── LoginPage.js         # Login page
+    │   ├── SignupPage.js        # Signup page
+    │   ├── ProductPage.js       # Product listing
+    │   ├── CartPage.js          # Shopping cart page
+    │   ├── CheckoutPage.js      # Checkout page
+    │   └── PaymentStatusPage.js # Payment confirmation/status page
+    │
+    ├── App.js                   # Main app component
+    ├── index.js                 # Main entry point
+    └── index.css                # Global styles
