@@ -4,7 +4,15 @@ from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
-app = Flask(__name__)
+from flask import Flask, send_from_directory
+import os
+
+app = Flask(__name__, static_folder="static")
+
+@app.route('/assets/<path:filename>')
+def get_asset(filename):
+    return send_from_directory(os.path.join(app.static_folder, "assets"), filename)
+
 # Simplified CORS configuration
 @app.after_request
 def after_request(response):
