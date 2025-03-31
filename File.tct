@@ -53,3 +53,10 @@ quikko-frontend/
     ├── App.js                   # Main app component
     ├── index.js                 # Main entry point
     └── index.css                # Global styles
+
+CREATE USER 'quikko_user'@'localhost' IDENTIFIED BY 'Password@123';
+
+
+INSERT INTO users (username, email, password) VALUES
+('Alice Doe', 'alice@example.com', 'test123'),
+('Bob Smith', 'bob@example.com', 'password123');
