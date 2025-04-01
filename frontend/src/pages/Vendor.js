@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Signin from "../assets/vendorsignup.jpg";
 
 const VendorSignup = () => {
   const [formData, setFormData] = useState({
@@ -44,20 +45,13 @@ const VendorSignup = () => {
         padding: "20px",
       }}
     >
-      {/* Left Side Image */}{" "}
       <div style={{ flex: 1, display: "flex", alignItems: "center" }}>
         <img
-          src="/assets/vendorsignin.jpg" // ✅ Image from `public/assets/`
+          src={Signin}
           alt="Vendor Signup"
-          style={{
-            width: "100%",
-            height: "500px",
-            objectFit: "cover",
-            borderRadius: "10px",
-          }}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />{" "}
-      </div>
-      {/* Right Side Form */}{" "}
+      </div>{" "}
       <div
         style={{
           flex: 1,
@@ -149,20 +143,33 @@ const VendorSignup = () => {
             required
             style={inputStyle}
           />{" "}
-          <label style={labelStyle}> Shop Logo: </label>{" "}
+          <label style={labelStyle}> Shop Logo(JPG, PNG, GIF): </label>{" "}
           <input
             type="file"
             name="shopLogo"
+            accept="image/png, image/jpeg, image/jpg, image/gif"
             onChange={handleFileChange}
             style={inputStyle}
           />{" "}
-          <label style={labelStyle}> Business License: </label>{" "}
+          <small style={{ color: "#555", fontSize: "12px" }}>
+            {" "}
+            Upload your shop 's logo (JPG, PNG, or GIF){" "}
+          </small>{" "}
+          <label style={labelStyle}>
+            {" "}
+            Business License Copy(PDF, JPG, PNG):{" "}
+          </label>{" "}
           <input
             type="file"
             name="businessLicense"
+            accept="application/pdf, image/png, image/jpeg, image/jpg"
             onChange={handleFileChange}
             style={inputStyle}
           />{" "}
+          <small style={{ color: "#555", fontSize: "12px" }}>
+            {" "}
+            Upload a copy of your business license(PDF, JPG, or PNG){" "}
+          </small>{" "}
           <button type="submit" style={buttonStyle}>
             {" "}
             Sign Up{" "}
@@ -173,7 +180,6 @@ const VendorSignup = () => {
   );
 };
 
-// Inline Styles
 const inputStyle = {
   width: "100%",
   padding: "10px",

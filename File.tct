@@ -39,8 +39,7 @@ quikko-frontend/
     ├── components/              # Reusable UI components
     │   └── Navbar.js            
     ├── pages/                   # Main pages
-    │   ├── HomePage.js          # Landing page
-    │   ├── ShopkeeperPage.js    # Shopkeeper dashboard
+    │   ├── HomePage.js             │   ├── ShopkeeperPage.js    # Shopkeeper dashboard
     │   ├── AdminPage.js         # Admin dashboard
     │   ├── CustomerPage.js      # Customer dashboard
     │   ├── LoginPage.js         # Login page
@@ -57,6 +56,17 @@ quikko-frontend/
 CREATE USER 'quikko_user'@'localhost' IDENTIFIED BY 'Password@123';
 
 
+INSERT INTO users (username, email, contact, address, password) VALUES
+('Alice Doe', 'alice@example.com', '1234567890', '123 Street, City', '$2a$10$ZbYv9Q8JQnLFAox9HfMSsOicT0Unuh5F7LqYXJfTnLK/SY56E8ZoG'),
+('Bob Smith', 'bob@example.com', '0987654321', '456 Avenue, City', '$2a$10$lfK8DQYfZTtpbncMEeAVtuVVZQ2bi0RZSvbnTUmVs5idjOjOP6bwW');
+
 INSERT INTO users (username, email, password) VALUES
 ('Alice Doe', 'alice@example.com', 'test123'),
 ('Bob Smith', 'bob@example.com', 'password123');
+
+
+
+INSERT INTO vendors (shop_name, owner_name, email, phone, business_category, address, password_hash, shop_logo, business_license, created_at, updated_at)
+VALUES 
+  ('Tech Haven', 'Alice Johnson', 'alice.johnson@example.com', '9876543210', 'Electronics', '123 Tech St, Silicon Valley', 'hashedpassword1', 'path/to/logo1.jpg', 'path/to/license1.pdf', NOW(), NOW()),
+  ('Book Corner', 'Bob Smith', 'bob.smith@example.com', '9876543211', 'Books', '456 Book Ave, Midtown', 'hashedpassword2', 'path/to/logo2.jpg', 'path/to/license2.pdf', NOW(), NOW());
