@@ -5,23 +5,31 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
 app = Flask(__name__, static_folder="static")
-bcrypt = Bcrypt(app)  # Initialize bcrypt
 
-# Database Config
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://username:quikko_user@localhost/quikko_db"
+# Enable CORS for frontend communication
+CORS(app, supports_credentials=True)
+
+# Initialize bcrypt for password hashing
+bcrypt = Bcrypt(app)
+
+# ✅ Database Configuration
+SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://quikko_user:Password%40123@localhost/quikko_db';
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
 db = SQLAlchemy(app)
 
-# User Model
+# ✅ User Model
 class User(db.Model):
+    __tablename__ = "users"
+    
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     contact = db.Column(db.String(15), nullable=False)
     address = db.Column(db.String(255), nullable=False)
-    password = db.Column(db.String(255), nullable=False)
+    password = db.Column(db.String(255), nullable=False)  # Store hashed password
 
-# ✅ Handle OPTIONS Preflight Requests
+# ✅ Handle OPTIONS Preflight Requests (For CORS)
 @app.before_request
 def handle_preflight():
     if request.method == "OPTIONS":
@@ -32,7 +40,7 @@ def handle_preflight():
         response.headers["Access-Control-Allow-Credentials"] = "true"
         return response, 200
 
-# Test Route for Users (Optional)
+# ✅ Test Route for Fetching Users
 @app.route('/users', methods=['GET'])
 def get_users():
     users = User.query.all()
@@ -41,3 +49,4 @@ def get_users():
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
+

@@ -1,23 +1,41 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_jwt_extended import JWTManager  # Import JWTManager
+from flask_jwt_extended import JWTManager
+from flask_bcrypt import Bcrypt
+from werkzeug.exceptions import HTTPException
 
+# Initialize extensions
 db = SQLAlchemy()
 migrate = Migrate()
-jwt = JWTManager()  # Initialize JWT
+jwt = JWTManager()
+bcrypt = Bcrypt()
 
-def create_app():
+def create_app(config_class='config.Config'):
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://quikko_user:Password%40123@localhost/quikko_db'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['JWT_SECRET_KEY'] = 'supersecretkey'  # Secret key for encoding tokens
+    app.config.from_object(config_class)
 
+    # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
-    jwt.init_app(app)  # Initialize JWT with Flask app
+    jwt.init_app(app)
+    bcrypt.init_app(app)
 
-    from app.routes.auth import auth
-    app.register_blueprint(auth, url_prefix='/auth')
+    # Register blueprints
+    from .routes import auth, vendor as vendor_routes
+    app.register_blueprint(auth.auth_bp, url_prefix='/auth')
+    app.register_blueprint(vendor_routes.vendor_bp, url_prefix='/vendor')
+
+    # Error handling
+    @app.errorhandler(HTTPException)
+    def handle_exception(e):
+        return jsonify({
+            "error": e.name,
+            "message": e.description
+        }), e.code
+
+    # Create tables
+    with app.app_context():
+        db.create_all()
 
     return app

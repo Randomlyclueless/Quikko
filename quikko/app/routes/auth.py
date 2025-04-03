@@ -1,45 +1,150 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import (
+    create_access_token,
+    jwt_required,  # Make sure this is imported
+    get_jwt_identity,
+    get_jwt
+)
 from datetime import timedelta
-from app.models.user import User
-from app import db
+from ..models.user import User
+from .. import db, jwt  # Ensure jwt is imported from your package
 
-auth = Blueprint('auth', __name__)
+auth_bp = Blueprint('auth', __name__)
 
-@auth.route('/signup', methods=['POST'])
+@auth_bp.route('/signup', methods=['POST'])
 def signup():
-    data = request.get_json()
-    username = data.get('username')
-    email = data.get('email')
-    password = data.get('password')
+    """Register a new user (customer or vendor)"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({
+                'status': 'error',
+                'message': 'No input data provided'
+            }), 400
 
-    if User.query.filter_by(email=email).first():
-        return jsonify({'status': 'error', 'message': 'User already exists!'}), 409
+        required_fields = ['username', 'email', 'password', 'role']
+        if not all(field in data for field in required_fields):
+            return jsonify({
+                'status': 'error',
+                'message': f'Missing required fields: {", ".join(required_fields)}'
+            }), 400
 
-    hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-    new_user = User(username=username, email=email, password=hashed_password)
-    db.session.add(new_user)
-    db.session.commit()
+        if User.query.filter_by(email=data['email']).first():
+            return jsonify({
+                'status': 'error',
+                'message': 'Email already registered'
+            }), 409
 
-    return jsonify({'status': 'success', 'message': 'Signup successful!'}), 201
+        if data['role'] not in ['customer', 'vendor']:
+            return jsonify({
+                'status': 'error',
+                'message': 'Invalid role specified'
+            }), 400
 
-@auth.route('/login', methods=['POST'])
+        new_user = User(
+            username=data['username'],
+            email=data['email'],
+            password=generate_password_hash(data['password']),
+            role=data['role']
+        )
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        return jsonify({
+            'status': 'success',
+            'message': 'Registration successful',
+            'user_id': new_user.id,
+            'role': new_user.role
+        }), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+@auth_bp.route('/login', methods=['POST'])
 def login():
-    data = request.get_json()
-    email = data.get('email')
-    password = data.get('password')
+    """Authenticate user and return JWT token"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({
+                'status': 'error',
+                'message': 'No input data provided'
+            }), 400
 
-    user = User.query.filter_by(email=email).first()
-    if user and check_password_hash(user.password, password):
-        # Generate a JWT token valid for 30 minutes
-        access_token = create_access_token(identity=user.email, expires_delta=timedelta(minutes=30))
-        return jsonify({'status': 'success', 'message': 'Login successful!', 'access_token': access_token}), 200
+        email = data.get('email')
+        password = data.get('password')
 
-    return jsonify({'status': 'error', 'message': 'Invalid email or password'}), 401
+        if not email or not password:
+            return jsonify({
+                'status': 'error',
+                'message': 'Missing email or password'
+            }), 400
 
-@auth.route('/protected', methods=['GET'])
+        user = User.query.filter_by(email=email).first()
+
+        if not user or not check_password_hash(user.password, password):
+            return jsonify({
+                'status': 'error',
+                'message': 'Invalid credentials'
+            }), 401
+
+        additional_claims = {
+            'user_id': user.id,
+            'role': user.role
+        }
+        
+        access_token = create_access_token(
+            identity=user.email,
+            additional_claims=additional_claims,
+            expires_delta=timedelta(hours=1)
+        )
+
+        return jsonify({
+            'status': 'success',
+            'access_token': access_token,
+            'user_id': user.id,
+            'role': user.role
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+@auth_bp.route('/validate', methods=['GET'])
 @jwt_required()
-def protected():
-    current_user = get_jwt_identity()  # Get the identity from the token
-    return jsonify({'status': 'success', 'message': f'Hello, {current_user}! This is a protected route.'}), 200
+def validate_token():
+    """Validate JWT token and return user info"""
+    try:
+        current_user_email = get_jwt_identity()
+        claims = get_jwt()
+        
+        user = User.query.filter_by(email=current_user_email).first()
+        if not user:
+            return jsonify({
+                'status': 'error',
+                'message': 'User not found'
+            }), 404
+
+        return jsonify({
+            'status': 'success',
+            'user': {
+                'email': user.email,
+                'role': user.role,
+                'user_id': user.id
+            },
+            'token_claims': claims
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500

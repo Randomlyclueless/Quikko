@@ -1,0 +1,58 @@
+CREATE TABLE vendors_data (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL UNIQUE,
+    business_name VARCHAR(100) NOT NULL,
+    business_email VARCHAR(120) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    
+    -- Tax Information
+    tax_id_type ENUM('EIN', 'GSTIN', 'VAT', 'OTHER') NOT NULL,
+    tax_id_number VARCHAR(20) NOT NULL,
+    tax_country VARCHAR(2) NOT NULL DEFAULT 'US',
+    
+    -- Business Address
+    address_line1 VARCHAR(100) NOT NULL,
+    address_line2 VARCHAR(100),
+    city VARCHAR(50) NOT NULL,
+    state VARCHAR(50) NOT NULL,
+    postal_code VARCHAR(20) NOT NULL,
+    country VARCHAR(2) NOT NULL DEFAULT 'US',
+    
+    -- Status & Timestamps
+    is_approved BOOLEAN DEFAULT FALSE,
+    created_at DATETIME DEFAULT NULL,
+    updated_at DATETIME DEFAULT NULL,
+    
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    UNIQUE KEY (tax_id_number, tax_country)
+);
+
+
+ADDING TRIGGERS TO HANDLE Timestamps
+-- Set created_at on insert
+DELIMITER //
+CREATE TRIGGER set_vendor_created_at
+BEFORE INSERT ON vendors_data
+FOR EACH ROW
+BEGIN
+    SET NEW.created_at = NOW();
+    SET NEW.updated_at = NOW();
+END//
+DELIMITER ;
+
+-- Set updated_at on update
+DELIMITER //
+CREATE TRIGGER set_vendor_updated_at
+BEFORE UPDATE ON vendors_data
+FOR EACH ROW
+BEGIN
+    SET NEW.updated_at = NOW();
+END//
+DELIMITER ;
+
+INSERT INTO vendors_data 
+(user_id, business_name, business_email, phone, tax_id_type, tax_id_number,
+ address_line1, city, state, postal_code)
+VALUES 
+(@new_vendor_id, 'Stationery World', 'contact@stationeryworld.com', '+11234567890',
+ 'EIN', '12-3456789', '123 Business Ave', 'New York', 'NY', '10001');
