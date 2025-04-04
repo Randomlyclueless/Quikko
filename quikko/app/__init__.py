@@ -17,7 +17,7 @@ def create_app(config_class='config.Config'):
 
     # Initialize extensions
     db.init_app(app)
-    migrate.init_app(app, db)
+    migrate.init_app(app, db)  # Handles migrations
     jwt.init_app(app)
     bcrypt.init_app(app)
 
@@ -34,8 +34,4 @@ def create_app(config_class='config.Config'):
             "message": e.description
         }), e.code
 
-    # Create tables
-    with app.app_context():
-        db.create_all()
-
-    return app
+    return app  
