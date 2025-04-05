@@ -3,7 +3,6 @@ from flask import Flask, make_response, request, jsonify
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-
 app = Flask(__name__, static_folder="static")
 
 # Enable CORS for frontend communication
@@ -47,20 +46,8 @@ def get_users():
     users_list = [{"id": u.id, "name": u.name, "email": u.email} for u in users]
     return jsonify(users_list)
 
-# ✅ Product Model
-class Product(db.Model):
-    __tablename__ = "products"
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    description = db.Column(db.Text, nullable=True)
-    price = db.Column(db.Float, nullable=False)
-    image_url = db.Column(db.String(255), nullable=True)  # Store image URL
-    vendor_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-
-    vendor = db.relationship("User", backref=db.backref("products", lazy=True))
-
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
-
+    with app.app_context():
+        db.create_all()  # optional: ensures tables exist
+    app.run(debug=True)

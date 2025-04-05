@@ -1,0 +1,63 @@
+.vendor-login,
+.vendor-signup {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.vendor-login h2,
+.vendor-signup h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.vendor-login form,
+.vendor-signup form {
+  display: flex;
+  flex-direction: column;
+}
+
+.vendor-login input,
+.vendor-signup input {
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.vendor-login input:focus,
+.vendor-signup input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.vendor-login button,
+.vendor-signup button {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.vendor-login button:hover,
+.vendor-signup button:hover {
+  background-color: #0056b3;
+}
+
+.message {
+  text-align: center;
+  margin-top: 1rem;
+  font-weight: 500;
+  color: #444;
+}

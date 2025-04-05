@@ -1,30 +1,36 @@
 from flask import Flask, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from flask_jwt_extended import JWTManager
-from flask_bcrypt import Bcrypt
+from flask_cors import CORS
 from werkzeug.exceptions import HTTPException
-
-# Initialize extensions
-db = SQLAlchemy()
-migrate = Migrate()
-jwt = JWTManager()
-bcrypt = Bcrypt()
+from .extensions import db, migrate, jwt, bcrypt
 
 def create_app(config_class='config.Config'):
     app = Flask(__name__)
     app.config.from_object(config_class)
-
+    CORS(app)
     # Initialize extensions
     db.init_app(app)
-    migrate.init_app(app, db)  # Handles migrations
+    migrate.init_app(app, db)
     jwt.init_app(app)
     bcrypt.init_app(app)
 
     # Register blueprints
-    from .routes import auth, vendor as vendor_routes
-    app.register_blueprint(auth.auth_bp, url_prefix='/auth')
-    app.register_blueprint(vendor_routes.vendor_bp, url_prefix='/vendor')
+    register_blueprints(app)
+
+    # Create tables
+    with app.app_context():
+        try:
+            from app.models.vendor import Vendor
+            db.create_all()  # For primary database
+            db.create_all(bind_key='vendors')  # For vendors database
+            
+            # Debug: Print all registered routes
+            print("\n=== REGISTERED ROUTES ===")
+            for rule in app.url_map.iter_rules():
+                print(f"{', '.join(rule.methods)} {rule.rule}")
+            print("=======================\n")
+            
+        except Exception as e:
+            app.logger.error(f"Database initialization error: {e}")
 
     # Error handling
     @app.errorhandler(HTTPException)
@@ -34,4 +40,14 @@ def create_app(config_class='config.Config'):
             "message": e.description
         }), e.code
 
-    return app  
+    return app
+
+def register_blueprints(app):
+    """Register all application blueprints"""
+    from app.routes.vendor_auth import auth_bp
+    
+    # Register vendor auth blueprint with proper URL prefix
+    app.register_blueprint(auth_bp, url_prefix='/api/vendor/auth')  # Changed to match your desired URL
+    
+    # Debug print to confirm registration
+    print(f"Registered vendor auth blueprint at: /api/vendor/auth")

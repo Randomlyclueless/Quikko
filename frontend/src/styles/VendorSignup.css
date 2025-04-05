@@ -1,0 +1,49 @@
+.vendor-signup {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 30px;
+  border-radius: 12px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.vendor-signup h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+.vendor-signup form {
+  display: flex;
+  flex-direction: column;
+}
+
+.vendor-signup input {
+  margin-bottom: 15px;
+  padding: 12px 14px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  transition: border-color 0.3s ease;
+}
+
+.vendor-signup input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.vendor-signup button {
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.vendor-signup button:hover {
+  background-color: #0056b3;
+}

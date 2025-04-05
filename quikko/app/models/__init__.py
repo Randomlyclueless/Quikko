@@ -1,5 +1,4 @@
-# app/models/__init__.py
+from app.extensions import db  # ✅ Correct import
 from .user import User
-from .vendor import Vendor
 
 __all__ = ['User', 'Vendor']
